@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS jop;
+CREATE TABLE jop (
+  id SERIAL PRIMARY KEY,
+  company VARCHAR(255),
+  title VARCHAR(255),
+  location VARCHAR(255),
+  url VARCHAR(255)
+);
