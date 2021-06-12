@@ -6,7 +6,7 @@ const express= require('express');
 const pg = require('pg');
 
 //const client = new pg.Client(process.env.DATABASE_URL);
-const Client = new pg.Client( { connectionString: process.env.DATABASE_URL, ssl: process.env.LOCALLY ? false : {rejectUnauthorized: false}} );
+const client = new pg.Client( { connectionString: process.env.DATABASE_URL, ssl: process.env.LOCALLY ? false : {rejectUnauthorized: false}} );
 const methodOverride = require('method-override');
 
 const superagent= require ('superagent');
@@ -20,6 +20,7 @@ server.use(express.urlencoded({ extended: true }));
 server.use(methodOverride('_method'));
 
 server.set('view engine','ejs');
+
 
 //ROOT//
 server.get('/',homepage)
@@ -66,7 +67,7 @@ function addfunction (req,res){
 
     let SQL = `INSERT INTO jop (title,company,location,url) VALUES ($1,$2,$3,$4) RETURNING *;`
     let safevalue=[req.body.title,req.body.company,req.body.location,req.body.url]
-    Client.query(SQL,safevalue)
+    client.query(SQL,safevalue)
     .then(val=>{
         //console.log(val)
         res.redirect('/mylist')
@@ -76,7 +77,7 @@ function addfunction (req,res){
 function mylisthandler(req,res){
 let sql =`SELECT * FROM jop`
 console.log(sql)
-Client.query(sql)
+client.query(sql)
 .then(val=>{
     res.render('MyList',{data:val.rows})
 })
@@ -92,7 +93,7 @@ function JOPS(jops){
 function detailshandler (req,res){
     let sql = `SELECT * FROM jop WHERE id=$1`
     let safevaleu=[req.params.id]
-    Client.query(sql,safevaleu)
+    client.query(sql,safevaleu)
     .then(val=>{
         res.render('detials',{data:val.rows[0]})
     })
@@ -101,7 +102,7 @@ function detailshandler (req,res){
 function updatehandler (req,res) {
     let sql =`UPDATE jop SET title=$1,company=$2,location=$3,url=$4 WHERE id=$5;`
     let safevalue=[req.body.title,req.body.company,req.body.location,req.body.url,req.params.id]
-    Client.query(sql,safevalue)
+    client.query(sql,safevalue)
     .then(val=>{
         res.redirect(`/details/${req.params.id}`)
     })
@@ -110,13 +111,13 @@ function updatehandler (req,res) {
 function delethandler (req,res){
 let sql=`DELETE FROM jop WHERE id=$1;`;
 let safevaleu=[req.params.id]
-Client.query(sql,safevaleu)
+client.query(sql,safevaleu)
 .then(val=>{
 res.redirect('/')
 })
 }
 
-Client.connect()
+client.connect()
 .then(() =>{
 server.listen(PORT,() => console.log(`LESNING TO THE ${PORT}`));
 })
