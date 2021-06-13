@@ -47,6 +47,9 @@ function homepage(req,res){
     })
     res.render('HomePage',{job:newdata})
     })
+    .catch(err=>{
+        response.render('error',{error:err});
+      });
     }
 
 function searchFUNCTION(req,res){
